@@ -67,6 +67,12 @@ withNightlyPipeline(type, product, component) {
 
   enableFullFunctionalTest(200)
 
+  before('smoketest') {
+    sh """
+      ./bin/pull-latest-release-asset.sh civil-damages-ccd-definition civil-damages-e2e.zip
+    """
+  }
+
   after('fullFunctionalTest') {
     sh """ ./gradlew runRpaHandOffTests """
     archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
