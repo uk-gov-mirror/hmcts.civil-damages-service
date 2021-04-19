@@ -95,6 +95,9 @@ allprojects {
       url "https://dl.bintray.com/hmcts/hmcts-maven"
     }
     maven {
+      url "http://repo.maven.apache.org/maven2"
+    }
+    maven {
       url  "http://repo.spring.io/milestone"
     }
     maven {
@@ -160,10 +163,6 @@ task installDependencies(type: Exec, description: 'Installs Yarn dependencies.')
   commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'install'
 }
 
-task checkDependenciesIntegrity(type: Exec, description: 'Checks integrity of Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'check', '--integrity'
-}
-
 task awaitApplicationReadiness(type: Exec, description: 'Awaits until application is ready.') {
   commandLine './bin/wait-for.sh', System.env.URL
   commandLine './bin/wait-for.sh', System.env.UNSPEC_SERVICE_URL
@@ -189,11 +188,11 @@ def inStrictOrder(Task... tasks) {
 }
 
 task smoke(description: 'Runs the smoke tests.') {
-  dependsOn(inStrictOrder(awaitApplicationReadiness, installDependencies, checkDependenciesIntegrity, runSmokeTests))
+  dependsOn(inStrictOrder(awaitApplicationReadiness, installDependencies, runSmokeTests))
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(awaitApplicationReadiness, installDependencies, checkDependenciesIntegrity, runFunctionalTests))
+  dependsOn(inStrictOrder(awaitApplicationReadiness, installDependencies, runFunctionalTests))
 }
 
 project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
